@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		.bar{
+			display: inline-block;
+			width:50px;
+			height: 100px;
+			background: blue;
+			margin-left: 5px;
+		}
+		rect{
+			transition: all 3s;
+		}
+		.arc{
+			margin-left: 30px;
+		}
+	</style>
+	<script type="text/javascript" src="d3.js">
+	</script>
+</head>
+<body>
+	<svg width="400" height="400">
+		<line x1="0" y1="0" x2="400" y2="400" stroke="red"/>
+		<circle r="20" cx="90" cy="90" stroke="orange" fill="green" stroke-width="20"/>
+		<rect x="100" y="100" rx="20" ry="20" opacity="0.3" width="200" height="100" fill="red" />
+		
+		<rect x="150" y="150" width="200" rx="20" ry="20" height="100" fill="blue" />
+		<rect x="200" y="200" width="200" rx="20" ry="20" height="100" fill="orange"/>
+	</svg>
+	<script type="text/javascript">
+		var dataset=[1,5,8,10,15];
+		d3.select("body").selectAll("div").data(dataset).enter().append("div").transition().duration(5000).ease("bounce").attr("class","bar").style("height",function(d){
+			return d*5+"px";
+		});
+
+		d3.selectAll("rect").on("mouseover",function(){
+			d3.select(this).attr("fill","black");
+		});
+		d3.selectAll("div").on("click",function(d){
+			d3.select("div").append("text").text(""+d);
+		});
+		d3.json("new.json",function(json){
+			console.log(json.name);
+		});
+		/*制作svg
+		var svg=d3.select("body").append("svg").attr({width:400,height:200});
+		svg.append("text").attr("x",300).attr("y",300).attr("fill","gold").text(function(d){
+			return "this value is "+d;
+		})
+		var circle=svg.selectAll("circle").data(dataset).enter().append("circle");
+		
+		circle.attr({
+			cx:function(d,i){
+				return i*50+30;
+			},
+			cy:100,
+			r:function(d){
+				return d;
+			},
+			fill:"red"
+		}).append("title").text(function(d){
+			return "this value is "+d;
+		});*/
+		var scale=d3.scale.linear();
+		var pie=d3.layout.pie();
+		var w=300;
+		var h=300;
+		var innerR=0;
+		var outerR=100;
+		var arc=d3.svg.arc().innerRadius(innerR).outerRadius(outerR);
+		var svg=d3.select("body").append("div").append("svg").attr({
+			width:600,
+			height:600
+		});
+		var color=d3.scale.category10();
+		var arcs=svg.selectAll("g.arc").data(pie(dataset)).enter().append("g").attr("class","arc")
+		.attr("transform","translate("+400+","+outerR+")");
+		arcs.append("path").attr("fill",function(d,i){
+			return color(i);
+		}).attr("d",arc);
+
+
+
+
+
+	</script>
+</body>
+</html>

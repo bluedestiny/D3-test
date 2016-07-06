@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		div.bar{
+			display:inline-block;
+			width:40px;
+			height:30px;
+			background-color:green;
+			margin-right:10px;
+		}
+		.line{
+			stroke-width:10;
+		}
+		
+	</style>
+</head>
+<body>
+	
+	<svg width='1000' height='700'>
+		<circle cx="100" cy="60" r='52' fill="blue" stroke="red" stroke-width='2'></circle>
+		<rect width='50' height='80' x='0' y='120' fill='red' opacity='0.2'></rect>
+		<ellipse cx='200' cy='300' rx='50' ry='20'></ellipse>
+		<text x='0' y='600' fill='red'>hello world</text>
+		<line x1='0' y1='400' x2='300' y2='500' stroke='orange' class='line'></line>
+	</svg>
+	<script type="text/javascript" src="d3.js"></script>
+	<script type="text/javascript">
+		//d3.select("body").append("p").text("new Paragraph");
+		
+		//d3.select("body").select("div").attr("class","bar");
+		
+		
+			var dataset=[];
+			for(var i=0;i<24;i++){
+				var h=Math.floor(Math.random()*30);
+				dataset.push(h);
+			}
+		d3.select("body").selectAll("p").data(dataset).enter().append("p").text(function(d){return "this is array data"+d;}).style("color",function(d){
+			if(d>3){
+				return "red";
+			}
+			else {
+				return "blue";
+			}
+
+		});
+			d3.select("body").selectAll("div").data(dataset).enter().append("div").attr("class","bar").style("height",function(d){
+				return d+"px";
+					
+			});
+			var dataset2=[90,80,70,60,50,40,30,20,10];
+			var w=300;
+			var h=300;
+			var outWidth=w/2;
+			var innerWidth=0;
+			var pie=d3.layout.pie();
+			var color=d3.scale.category10();
+			var arc=d3.svg.arc().innerRadius(outWidth).outerRadius(outWidth);	
+			var svg=d3.select("body").append("svg").attr("width",w).attr("height",h);
+			var arcs=svg.selectAll("g.arc").data(pie(dataset2)).enter().append("g").attr("class","arc").attr("transform","translate("+outWidth+","+outWidth+")");
+			arcs.append("path").attr("fill",function(d,i){
+				return color(i);
+			}).attr("d",arc);
+
+			d3.select("body").selectAll("h1").data(dataset2).enter().append("div").attr("class","bar").style("height",function(d){return d+"px";}).style("background","red");	
+
+			var scale=d3.scale.linear();
+			scale.domain([100,500]);
+			scale.range([10,300]);
+			scale(300);
+			
+			var dataset3=[10,20,30,40,50,60,50,40,30,20,10];
+			var w=500;
+			var h=400;
+			var svg1=d3.select("body").append("svg").attr("width",w).attr("height",h);
+			svg1.selectAll("text").data(dataset3).enter().append("text").text(function(d){
+				return d;
+			}).attr("x",function(d,i){
+				return i*(w/dataset3.length);
+			}).attr("y",function(d,i){
+				return d*3+10;
+			});
+
+			var dataset4=[[5,70],[100,80],[200,123],[300,161],[340,106],[350,300]];
+			var svg2=d3.select("body").append("svg").attr({
+				width:700,
+				height:400
+			});
+			
+			var xAxis=d3.svg.axis().orient("bottom");
+			var yAxis=d3.svg.axis().orient("left");
+			var xScale=d3.scale.linear().domain([0,d3.max(dataset4,function(d){
+				return d[0];
+			})]).range([0,w]);
+
+			var yScale=d3.scale.linear().domain([0,d3.max(dataset4,function(d){
+				return d[1];
+			})]).range([0,500]);
+			xAxis.scale(xScale);
+			yAxis.scale(yScale);
+			var zoom=d3.behavior.zoom().scaleExtent([1,10]).on("zoom",zoomed);
+			svg1.append("g").call(zoom).selectAll("rect").data(dataset3).enter().append("rect").attr("x",function(d,i){
+				return i*(w/dataset3.length);
+
+			}).attr("y",0).attr("fill",function(d){
+				return "rgb("+d*10+",0,"+(d*20)+")";
+			}).attr("width",20).attr("height",function(d,i){
+				return d*3;
+			});//.call(xAxis)
+			svg2.append("g").call(zoom).selectAll("circle").data(dataset4).enter().append("circle").attr("fill",'orange').attr({
+				cx:function(d){
+					return d[0];
+				},
+				cy:function(d){
+					return d[1];
+				},
+				r:40
+			});
+			function zoomed() {
+			d3.select(this).attr("transform", 
+				"translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+		}
+			
+			
+			
+	</script>
+</body>
+</html>
